@@ -10,7 +10,7 @@
       "command": "docker-compose",
       "args": ["run", "--rm", "maintenance", "bash", "refresh_auth.sh"],
 
-      "options": { "cwd": "infrastructure" },
+      "options": { "cwd": "${workspaceFolder}/infrastructure" },
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -28,7 +28,7 @@
       "command": "docker-compose",
       "args": ["run", "--rm", "maintenance", "bash", "refresh_api.sh"],
 
-      "options": { "cwd": "infrastructure" },
+      "options": { "cwd": "${workspaceFolder}/infrastructure" },
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -46,7 +46,7 @@
       "command": "docker-compose",
       "args": ["run", "--rm", "maintenance", "bash", "refresh_common.sh"],
 
-      "options": { "cwd": "infrastructure" },
+      "options": { "cwd": "${workspaceFolder}/infrastructure" },
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -64,7 +64,7 @@
       "command": "docker-compose",
       "args": ["run", "--rm", "maintenance", "bash", "refresh_talentsearch.sh"],
 
-      "options": { "cwd": "infrastructure" },
+      "options": { "cwd": "${workspaceFolder}/infrastructure" },
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -82,7 +82,7 @@
       "command": "docker-compose",
       "args": ["run", "--rm", "maintenance", "bash", "refresh_admin.sh"],
 
-      "options": { "cwd": "infrastructure" },
+      "options": { "cwd": "${workspaceFolder}/infrastructure" },
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -100,7 +100,7 @@
       "command": "docker-compose",
       "args": ["run", "--rm", "maintenance", "bash", "refresh_all.sh"],
 
-      "options": { "cwd": "infrastructure" },
+      "options": { "cwd": "${workspaceFolder}/infrastructure" },
       "presentation": {
         "echo": true,
         "reveal": "always",
