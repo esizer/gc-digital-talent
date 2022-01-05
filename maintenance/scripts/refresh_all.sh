@@ -1,7 +1,7 @@
 #! /bin/bash
 
-./refresh_auth.sh
-./refresh_api.sh
-./refresh_common.sh
-./refresh_talentsearch.sh
-./refresh_admin.sh
+$WORKSPACE/maintenance/scripts/refresh_auth.sh
+$WORKSPACE/maintenance/scripts/refresh_api.sh
+$WORKSPACE/maintenance/scripts/refresh_common.sh
+$WORKSPACE/maintenance/scripts/refresh_talentsearch.sh
+$WORKSPACE/maintenance/scripts/refresh_admin.sh

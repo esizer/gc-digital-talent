@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cd ../../auth
+cd $WORKSPACE/auth
 composer install
 php artisan migrate
 php artisan config:clear

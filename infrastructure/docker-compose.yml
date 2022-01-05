@@ -36,6 +36,8 @@ services:
       - 8001:443
 
   maintenance:
+    environment:
+      WORKSPACE: /workspace
     build: ./maintenance-container
     working_dir: /workspace/maintenance/scripts
     deploy:

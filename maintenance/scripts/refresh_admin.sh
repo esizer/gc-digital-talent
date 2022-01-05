@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cd ../../admin
+cd $WORKSPACE/admin
 composer install
 php artisan config:clear
 npm install

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cd ../../talentsearch
+cd $WORKSPACE/talentsearch
 composer install
 npm install
 npm rebuild node-sass
