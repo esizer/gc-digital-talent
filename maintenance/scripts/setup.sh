@@ -1,5 +1,9 @@
 #! /bin/bash
 
+# Fail out of script immediately if any single command fails.
+# See: https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425
+set -euxo pipefail
+
 # setup auth project
 cd $WORKSPACE/auth
 cp .env.example .env
@@ -13,8 +17,6 @@ rm personal_access_client.txt
 php artisan config:clear
 npm install
 npm run dev
-chgrp -R www-data ./storage ./vendor
-chmod -R u+rw,g+rw ./storage/ ./vendor
 
 # setup api project
 cd $WORKSPACE/api
@@ -24,8 +26,6 @@ composer install
 php artisan migrate:fresh --seed
 php artisan lighthouse:print-schema --write
 $WORKSPACE/maintenance/scripts/update_api_env.sh
-chgrp -R www-data ./storage ./vendor
-chmod -R u+rw,g+rw ./storage/ ./vendor
 
 # setup common project
 cd $WORKSPACE/common
@@ -43,8 +43,6 @@ npm rebuild node-sass
 npm run h2-build
 npm run codegen
 npm run dev
-chgrp -R www-data ./storage ./vendor
-chmod -R u+rw,g+rw ./storage/ ./vendor
 
 # setup admin project
 cd $WORKSPACE/admin
@@ -62,5 +60,14 @@ npm rebuild node-sass
 npm run h2-build
 npm run codegen
 npm run dev
-chgrp -R www-data ./storage ./vendor
-chmod -R u+rw,g+rw ./storage/ ./vendor
+
+# Give all read/write access to work directories so www-data in the php container can modify them
+sudo chmod -R a+r,a+w \
+      $WORKSPACE/api/storage \
+      $WORKSPACE/api/vendor \
+      $WORKSPACE/admin/storage \
+      $WORKSPACE/admin/vendor \
+      $WORKSPACE/auth/storage \
+      $WORKSPACE/auth/vendor \
+      $WORKSPACE/talentsearch/storage \
+      $WORKSPACE/talentsearch/vendor
