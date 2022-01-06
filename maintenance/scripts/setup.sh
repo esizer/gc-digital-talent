@@ -62,7 +62,7 @@ npm run codegen
 npm run dev
 
 # Give all read/write access to work directories so www-data in the php container can modify them
-sudo chmod -R a+r,a+w \
+chmod -R a+r,a+w \
       $WORKSPACE/api/storage \
       $WORKSPACE/api/vendor \
       $WORKSPACE/admin/storage \

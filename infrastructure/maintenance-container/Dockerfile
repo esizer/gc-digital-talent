@@ -23,8 +23,3 @@ RUN npm install -g npm@latest
 # https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
 RUN wget https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer -O - -q | php -- --quiet \
   && mv composer.phar /usr/bin/composer
-
-# Setup non-root user.  Node doesn't like to run as root. Make a sudoer.
-RUN useradd -ms /bin/bash -g www-data dockeruser \
-  && echo 'dockeruser     ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER dockeruser

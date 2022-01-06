@@ -44,9 +44,9 @@ services:
       mode: replicated
       replicas: 0
     volumes:
-      - maintenancedata2:/home/dockeruser
+      - maintenancedata:/home/dockeruser
       - ../:/workspace
 
 volumes:
   pgdata:
-  maintenancedata2:
+  maintenancedata:
