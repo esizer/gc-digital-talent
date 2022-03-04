@@ -6,11 +6,17 @@ import ADMIN_APP_DIR from "./adminConstants";
 export type AdminRoutes = ReturnType<typeof adminRoutes>;
 
 const adminRoutes = (lang: string) => {
-  const unlocalizedRoot = (): string => path.join("/", ADMIN_APP_DIR); // leading slash in case empty base url
+  const loginRoot = (): string => "/";
   const home = (): string => path.join("/", lang, ADMIN_APP_DIR); // leading slash in case empty base url
+
   return {
     home,
-    refreshAccessToken: (): string => path.join(unlocalizedRoot(), "refresh"),
+    login: (from: string): string => {
+      let route = path.join(loginRoot(), "login");
+      if (from) route += `?from=${from}`;
+      return route;
+    },
+    refreshAccessToken: (): string => path.join(loginRoot(), "refresh"),
 
     classificationTable: (): string => path.join(home(), "classifications"),
     classificationCreate: (): string =>

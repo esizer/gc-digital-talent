@@ -25,8 +25,9 @@ DirectorySlash off
     # Send localized admin requests also to admin public folder;
     RewriteRule ^(en|fr)/admin(/(.*))?$ frontend/admin/public/$3 [L]
 
-    # Send auth-callback request to admin
-    RewriteRule ^auth-callback$ frontend/admin/public/auth-callback [L]
+    # Send login request to login service
+    RewriteRule ^login$ login/public/login [L]
+    RewriteRule ^auth-callback$ login/public/auth-callback [L]
 
     # Send talent requests to talentsearch public folder (with or without public/ path prefix).
     RewriteRule ^talent/public(/(.*))?$ frontend/talentsearch/public/$2 [L]

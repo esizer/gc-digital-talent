@@ -107,6 +107,7 @@ const LoginOrLogout = () => {
   const intl = useIntl();
   const location = useLocation();
   const { loggedIn, logout } = useContext(AuthContext);
+  const routes = useAdminRoutes();
 
   if (loggedIn) {
     return (
@@ -144,7 +145,7 @@ const LoginOrLogout = () => {
       block
       tabIndex={-1}
       onClick={() => {
-        window.location.href = `/admin/login?from=${location.pathname}`;
+        window.location.href = routes.login(location.pathname);
       }}
     >
       {intl.formatMessage({

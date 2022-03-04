@@ -14,13 +14,7 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::prefix(config('app.app_dir'))->group(function () {
-    Route::get('/login', [AuthController::class, 'login']);
-    Route::get('/auth-callback', [AuthController::class, 'authCallback']);
-    Route::get('/refresh', [AuthController::class, 'refresh']);
-});
+$router->get('/login', 'AuthController@login');
+$router->get('/auth-callback', 'AuthController@authCallback');
+$router->get('/refresh', 'AuthController@refresh');
 
-// We may be redirecting the auth-callback route from the server root back here using Apache rewrite.
-Route::prefix('')->group(function () {
-    Route::get('/auth-callback', [AuthController::class, 'authCallback']);
-});

@@ -39,6 +39,14 @@ ${parent_path}/update_api_env.sh
 chown -R www-data ./storage ./vendor
 chmod -R 775 ./storage
 
+# setup login project
+cd /var/www/html/login
+cp .env.example .env
+${parent_path}/update_env_appkey.sh .env
+composer install
+chown -R www-data ./storage ./vendor
+chmod -R 775 ./storage
+
 # setup frontend workspace
 cd /var/www/html/frontend
 nvm install --latest-npm
