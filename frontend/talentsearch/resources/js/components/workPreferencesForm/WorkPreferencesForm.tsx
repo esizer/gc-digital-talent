@@ -3,7 +3,11 @@ import { useIntl } from "react-intl";
 import { errorMessages } from "@common/messages";
 import { Checklist, RadioGroup } from "@common/components/form";
 import { getLocale } from "@common/helpers/localize";
-import { OperationalRequirement } from "../../api/generated";
+import { notEmpty } from "@common/helpers/util";
+import {
+  OperationalRequirement,
+  useGetOperationalRequirementsQuery,
+} from "../../api/generated";
 
 export const WorkPreferencesForm: React.FunctionComponent<{
   operationalRequirements: OperationalRequirement[];
@@ -141,6 +145,16 @@ export const WorkPreferencesForm: React.FunctionComponent<{
         </div>
       </div>
     </div>
+  );
+};
+
+const WorkPreferencesFormApi: React.FunctionComponent = () => {
+  const [{ data, fetching, error }] = useGetOperationalRequirementsQuery();
+  const operationalRequirements: OperationalRequirement[] =
+    data?.operationalRequirements.filter(notEmpty) || [];
+
+  return (
+    <WorkPreferencesForm operationalRequirements={operationalRequirements} />
   );
 };
 
