@@ -3,6 +3,7 @@ import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import Form from "@common/components/form/BasicForm";
 import Submit from "@common/components/form/Submit";
+import { fakeOperationalRequirements } from "@common/fakeData";
 import WorkPreferencesForm from "./WorkPreferencesForm";
 
 export default {
@@ -13,8 +14,10 @@ export default {
 const TemplatePreferencesForm: Story = () => {
   return (
     <Form onSubmit={action("submit")}>
-      <WorkPreferencesForm />
-      <Submit />
+      <WorkPreferencesForm
+        operationalRequirements={fakeOperationalRequirements()}
+      />
+      <Submit color="cta" />
     </Form>
   );
 };

@@ -2,9 +2,27 @@ import React from "react";
 import { useIntl } from "react-intl";
 import { errorMessages } from "@common/messages";
 import { Checklist, RadioGroup } from "@common/components/form";
+import { getLocale } from "@common/helpers/localize";
+import { OperationalRequirement } from "../../api/generated";
 
-export const WorkPreferencesForm: React.FunctionComponent = () => {
+export const WorkPreferencesForm: React.FunctionComponent<{
+  operationalRequirements: OperationalRequirement[];
+}> = ({ operationalRequirements }) => {
   const intl = useIntl();
+  const locale = getLocale(intl);
+  const preferencesItems: { value: string; label: string }[] =
+    operationalRequirements.map((requirement) => {
+      return {
+        value: requirement.id,
+        label:
+          requirement.name[locale] ||
+          intl.formatMessage({
+            defaultMessage: "Error: operational requirement name not found.",
+            description:
+              "Error message if OperationalRequirement name is not defined.",
+          }),
+      };
+    });
   return (
     <div>
       <h2 data-h2-font-size="b(h3)">
@@ -54,70 +72,71 @@ export const WorkPreferencesForm: React.FunctionComponent = () => {
         <div data-h2-padding="b(right, l)">
           <Checklist
             idPrefix="optional-work-preferences"
-            legend="I would consider accepting a job that…"
+            legend="I would consider accepting a job that requires…"
             name="optionalWorkPreferences"
-            items={[
-              {
-                value: "work-overtime-occasionally",
-                label: intl.formatMessage({
-                  defaultMessage:
-                    "...requires me to work overtime. (Occasionally)",
-                  description:
-                    "Label displayed on Work Preferences form for work overtime occasionally option",
-                }),
-              },
-              {
-                value: "work-overtime-regularly",
-                label: intl.formatMessage({
-                  defaultMessage:
-                    "...requires me to work overtime. (Regularly)",
-                  description:
-                    "Label displayed on Work Preferences form for work overtime regularly option",
-                }),
-              },
-              {
-                value: "shift-work",
-                label: intl.formatMessage({
-                  defaultMessage: "...has shift-work.",
-                  description:
-                    "Label displayed on Work Preferences form for shift-work option",
-                }),
-              },
-              {
-                value: "on-call",
-                label: intl.formatMessage({
-                  defaultMessage: "...has 24/7 on-call shifts.",
-                  description:
-                    "Label displayed on Work Preferences form for on-call option",
-                }),
-              },
-              {
-                value: "travel",
-                label: intl.formatMessage({
-                  defaultMessage: "...requires me to travel.",
-                  description:
-                    "Label displayed on Work Preferences form for on-call option",
-                }),
-              },
-              {
-                value: "transport-lift-equipment",
-                label: intl.formatMessage({
-                  defaultMessage:
-                    "...requires me to transport, lift and set down equipment weighing up to 20kg.",
-                  description:
-                    "Label displayed on Work Preferences form for valid driver's license option",
-                }),
-              },
-              {
-                value: "valid-drivers-license",
-                label: intl.formatMessage({
-                  defaultMessage:
-                    "...requires me to have a valid driver's license or personal mobility to the degree normally associated with possession of a valid driver's license.",
-                  description:
-                    "Label displayed on Work Preferences form for valid driver's license option",
-                }),
-              },
-            ]}
+            items={preferencesItems}
+            //     [
+            //   {
+            //     value: "work-overtime-occasionally",
+            //     label: intl.formatMessage({
+            //       defaultMessage:
+            //         "...requires me to work overtime. (Occasionally)",
+            //       description:
+            //         "Label displayed on Work Preferences form for work overtime occasionally option",
+            //     }),
+            //   },
+            //   {
+            //     value: "work-overtime-regularly",
+            //     label: intl.formatMessage({
+            //       defaultMessage:
+            //         "...requires me to work overtime. (Regularly)",
+            //       description:
+            //         "Label displayed on Work Preferences form for work overtime regularly option",
+            //     }),
+            //   },
+            //   {
+            //     value: "shift-work",
+            //     label: intl.formatMessage({
+            //       defaultMessage: "...has shift-work.",
+            //       description:
+            //         "Label displayed on Work Preferences form for shift-work option",
+            //     }),
+            //   },
+            //   {
+            //     value: "on-call",
+            //     label: intl.formatMessage({
+            //       defaultMessage: "...has 24/7 on-call shifts.",
+            //       description:
+            //         "Label displayed on Work Preferences form for on-call option",
+            //     }),
+            //   },
+            //   {
+            //     value: "travel",
+            //     label: intl.formatMessage({
+            //       defaultMessage: "...requires me to travel.",
+            //       description:
+            //         "Label displayed on Work Preferences form for on-call option",
+            //     }),
+            //   },
+            //   {
+            //     value: "transport-lift-equipment",
+            //     label: intl.formatMessage({
+            //       defaultMessage:
+            //         "...requires me to transport, lift and set down equipment weighing up to 20kg.",
+            //       description:
+            //         "Label displayed on Work Preferences form for valid driver's license option",
+            //     }),
+            //   },
+            //   {
+            //     value: "valid-drivers-license",
+            //     label: intl.formatMessage({
+            //       defaultMessage:
+            //         "...requires me to have a valid driver's license or personal mobility to the degree normally associated with possession of a valid driver's license.",
+            //       description:
+            //         "Label displayed on Work Preferences form for valid driver's license option",
+            //     }),
+            //   },
+            // ]}
           />
         </div>
       </div>
