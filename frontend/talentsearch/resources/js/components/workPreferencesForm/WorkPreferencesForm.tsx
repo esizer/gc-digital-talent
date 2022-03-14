@@ -1,23 +1,14 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import React from "react";
 import { useIntl } from "react-intl";
 import { toast } from "react-toastify";
 import { errorMessages } from "@common/messages";
-import {
-  BasicForm,
-  Checklist,
-  RadioGroup,
-  Submit,
-} from "@common/components/form";
+import { BasicForm, Checklist, RadioGroup } from "@common/components/form";
 import { Button } from "@common/components/Button/Button";
 import { getLocale } from "@common/helpers/localize";
 import { notEmpty } from "@common/helpers/util";
-import {
-  ArrowSmDownIcon,
-  ArrowCircleLeftIcon,
-  SaveIcon,
-} from "@heroicons/react/solid";
+import { SaveIcon } from "@heroicons/react/solid";
 import {
   OperationalRequirement,
   useGetOperationalRequirementsQuery,
@@ -36,7 +27,7 @@ export const WorkPreferencesForm: React.FunctionComponent<{
   function u(msg: string) {
     return (
       <span
-        // data-h2-border="b(black, bottom, solid, l)"
+        // data-h2-border="b(black, bottom, solid, s)"
         style={{
           borderBottom: "1px solid #333",
         }}
@@ -133,32 +124,16 @@ export const WorkPreferencesForm: React.FunctionComponent<{
             <Button
               color="cta"
               mode="solid"
+              data-h2-display="b(flex)"
+              data-h2-align-items="b(center)"
               type="submit"
-              style={{ position: "relative" }}
             >
-              <span
-                style={{
-                  width: "20px",
-                  position: "absolute",
-                  bottom: "8px",
-                }}
-              >
-                <SaveIcon
-                  data-h2-bg-color="b(black)"
-                  data-h2-padding="b(right,l)"
-                />
-              </span>
-
-              <span
-                style={{
-                  paddingLeft: "30px",
-                }}
-              >
+              <SaveIcon style={{ width: "1rem" }} />
+              <span data-h2-margin="b(left, xxs)">
                 {intl.formatMessage(
                   {
-                    defaultMessage: "<u>Save and go Back</u>",
-                    description:
-                      "Description for Save and go Back button in Work Preferences Form",
+                    defaultMessage: "<u>Save and go back</u>",
+                    description: "Label for save button on profile form.",
                   },
                   {
                     u,
@@ -182,6 +157,8 @@ export const WorkPreferencesFormApi: React.FunctionComponent = () => {
     // TODO: implement mutation
     return Promise.resolve();
   };
+  /* eslint-disable @typescript-eslint/ban-ts-comment */
+
   const handleSubmit = (data: any) => {
     return executeMutation()
       .then(() => {
