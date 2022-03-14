@@ -11,6 +11,7 @@ const talentSearchRoutes = (lang: string) => {
     home,
     search: (): string => path.join(home(), "search"),
     request: (): string => path.join(home(), "request"),
+    Workpreferences: (): string => path.join(home(), "Work Preferences"),
   };
 };
 

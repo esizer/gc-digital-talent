@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import React from "react";
 import { useIntl } from "react-intl";
 import { toast } from "react-toastify";
@@ -8,8 +10,14 @@ import {
   RadioGroup,
   Submit,
 } from "@common/components/form";
+import { Button } from "@common/components/Button/Button";
 import { getLocale } from "@common/helpers/localize";
 import { notEmpty } from "@common/helpers/util";
+import {
+  ArrowSmDownIcon,
+  ArrowCircleLeftIcon,
+  SaveIcon,
+} from "@heroicons/react/solid";
 import {
   OperationalRequirement,
   useGetOperationalRequirementsQuery,
@@ -21,6 +29,22 @@ export const WorkPreferencesForm: React.FunctionComponent<{
 }> = ({ operationalRequirements, handleSubmit }) => {
   const intl = useIntl();
   const locale = getLocale(intl);
+
+  function bold(msg: string) {
+    return <span data-h2-font-weight="b(700)">{msg}</span>;
+  }
+  function u(msg: string) {
+    return (
+      <span
+        // data-h2-border="b(black, bottom, solid, l)"
+        style={{
+          borderBottom: "1px solid #333",
+        }}
+      >
+        {msg}
+      </span>
+    );
+  }
   const preferencesItems: { value: string; label: string }[] =
     operationalRequirements.map((requirement) => {
       return {
@@ -49,13 +73,16 @@ export const WorkPreferencesForm: React.FunctionComponent<{
           })}
         </h2>
         <p>
-          {intl.formatMessage({
-            defaultMessage:
-              "Certain jobs require you to work odd hours or perform tasks that are a little outside of the normal. Please indicate which special requirements you are comfortable with.",
-            description: "Description blurb for Work Preferences Form",
-          })}
+          {intl.formatMessage(
+            {
+              defaultMessage:
+                "Certain jobs require you to work odd hours or perform tasks that are a little outside of the normal. Please indicate which special requirements you are comfortable with.",
+              description: "Description blurb for Work Preferences Form",
+            },
+            { bold },
+          )}
         </p>
-        <div data-h2-display="b(flex)" data-h2-padding="b(top, m)">
+        <div data-h2-flex-item="b(1of1)" data-h2-padding="b(top, m)">
           <div data-h2-padding="b(right, l)">
             <RadioGroup
               idPrefix="required-work-preferences"
@@ -74,89 +101,72 @@ export const WorkPreferencesForm: React.FunctionComponent<{
                 },
                 {
                   value: "only-indeterminate",
-                  label: intl.formatMessage({
-                    defaultMessage:
-                      "...only those of an indeterminate duration. (permanent)",
-                    description:
-                      "Label displayed on Work Preferences form for indeterminate duration option.",
-                  }),
+                  label: intl.formatMessage(
+                    {
+                      defaultMessage:
+                        "...only those of an <bold>indeterminate</bold> duration. (permanent)",
+                      description:
+                        "Label displayed on Work Preferences form for indeterminate duration option.",
+                    },
+                    { bold },
+                  ),
                 },
               ]}
             />
           </div>
         </div>
-        <div data-h2-display="b(flex)" data-h2-padding="b(top, m)">
+        <div data-h2-flex-item="b(1of1)" data-h2-padding="b(top, m)">
           <div data-h2-padding="b(right, l)">
             <Checklist
               idPrefix="optional-work-preferences"
               legend="I would consider accepting a job that requires…"
               name="optionalWorkPreferences"
               items={preferencesItems}
-              //     [
-              //   {
-              //     value: "work-overtime-occasionally",
-              //     label: intl.formatMessage({
-              //       defaultMessage:
-              //         "...requires me to work overtime. (Occasionally)",
-              //       description:
-              //         "Label displayed on Work Preferences form for work overtime occasionally option",
-              //     }),
-              //   },
-              //   {
-              //     value: "work-overtime-regularly",
-              //     label: intl.formatMessage({
-              //       defaultMessage:
-              //         "...requires me to work overtime. (Regularly)",
-              //       description:
-              //         "Label displayed on Work Preferences form for work overtime regularly option",
-              //     }),
-              //   },
-              //   {
-              //     value: "shift-work",
-              //     label: intl.formatMessage({
-              //       defaultMessage: "...has shift-work.",
-              //       description:
-              //         "Label displayed on Work Preferences form for shift-work option",
-              //     }),
-              //   },
-              //   {
-              //     value: "on-call",
-              //     label: intl.formatMessage({
-              //       defaultMessage: "...has 24/7 on-call shifts.",
-              //       description:
-              //         "Label displayed on Work Preferences form for on-call option",
-              //     }),
-              //   },
-              //   {
-              //     value: "travel",
-              //     label: intl.formatMessage({
-              //       defaultMessage: "...requires me to travel.",
-              //       description:
-              //         "Label displayed on Work Preferences form for on-call option",
-              //     }),
-              //   },
-              //   {
-              //     value: "transport-lift-equipment",
-              //     label: intl.formatMessage({
-              //       defaultMessage:
-              //         "...requires me to transport, lift and set down equipment weighing up to 20kg.",
-              //       description:
-              //         "Label displayed on Work Preferences form for valid driver's license option",
-              //     }),
-              //   },
-              //   {
-              //     value: "valid-drivers-license",
-              //     label: intl.formatMessage({
-              //       defaultMessage:
-              //         "...requires me to have a valid driver's license or personal mobility to the degree normally associated with possession of a valid driver's license.",
-              //       description:
-              //         "Label displayed on Work Preferences form for valid driver's license option",
-              //     }),
-              //   },
-              // ]}
             />
           </div>
-          <Submit color="cta" />
+          {
+            // <Submit color="cta" text="Save and go Back" />}
+          }
+        </div>
+        <div data-h2-flex-item="b(1of1)" data-h2-padding="b(top, m)">
+          <div data-h2-padding="b(right, l)">
+            <Button
+              color="cta"
+              mode="solid"
+              type="submit"
+              style={{ position: "relative" }}
+            >
+              <span
+                style={{
+                  width: "20px",
+                  position: "absolute",
+                  bottom: "8px",
+                }}
+              >
+                <SaveIcon
+                  data-h2-bg-color="b(black)"
+                  data-h2-padding="b(right,l)"
+                />
+              </span>
+
+              <span
+                style={{
+                  paddingLeft: "30px",
+                }}
+              >
+                {intl.formatMessage(
+                  {
+                    defaultMessage: "<u>Save and go Back</u>",
+                    description:
+                      "Description for Save and go Back button in Work Preferences Form",
+                  },
+                  {
+                    u,
+                  },
+                )}
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
     </BasicForm>
