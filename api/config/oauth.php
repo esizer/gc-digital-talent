@@ -24,7 +24,7 @@ return [
     | https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
     |
     */
-    'server_iss' => env('AUTH_SERVER_ISS'),
+    'server_iss' => env('AUTH_SERVER_ISS', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
     | as the server public key to validate tokens.
     |
     */
-    'server_public_key' => env('AUTH_SERVER_PUBLIC_KEY'),
+    'server_public_key' => env('AUTH_SERVER_PUBLIC_KEY', ''),
 
     /*
     |--------------------------------------------------------------------------
