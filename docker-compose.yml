@@ -43,7 +43,6 @@ services:
   #   volumes:
   #     - maintenancedata:/root
   #     - ../maintenance/scripts:/root/scripts
-  #     - ../api:/var/www/html/api
   #     - ../auth:/var/www/html/auth
   #     - ../frontend:/var/www/html/frontend
   #     - ../tc-report:/var/www/html/tc-report
@@ -54,6 +53,8 @@ services:
       - postgres
     volumes:
       - ./api:/usr/src/api
+      - shared:/usr/src/api/shared
+      #todo: any way to clean these up?
       - /usr/src/api/vendor
       - /usr/src/api/bootstrap/cache
       - /usr/src/api/storage/app/framework
@@ -62,3 +63,23 @@ services:
       - /usr/src/api/storage/logs
     ports:
       - 8002:8002
+
+  auth:
+    build: ./auth
+    depends_on:
+      - postgres
+    volumes:
+      - ./auth:/usr/src/auth
+      - shared:/usr/src/auth/shared
+      #todo: any way to clean these up?
+      - /usr/src/auth/node_modules
+      - /usr/src/auth/vendor
+      - /usr/src/auth/bootstrap/cache
+      - /usr/src/auth/storage/app/framework
+      - /usr/src/auth/storage/framework/cache/data
+      - /usr/src/auth/storage/framework/views
+      - /usr/src/auth/storage/logs
+    ports:
+      - 8003:8003
+volumes:
+  shared:
