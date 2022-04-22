@@ -18,7 +18,7 @@ export function useDeepCompareEffect(
   callback: EffectCallback,
   dependencies: DependencyList,
 ): void {
-  useEffect(callback, dependencies.map(useDeepCompareMemoize));
+  useEffect(callback, [callback]);
 }
 
 export default useDeepCompareEffect;

@@ -140,12 +140,13 @@ export const SearchForm: React.FunctionComponent<SearchFormProps> = ({
 
   // Whenever form values change (with some debounce allowance), call updateCandidateFilter
   const formValues = watch();
-  const submitDebounced = useCallback(
-    debounce((values: FormValues) => {
-      if (updateCandidateFilter) {
-        updateCandidateFilter(formValuesToData(values));
-      }
-    }, 200),
+  const submitDebounced = useMemo(
+    () =>
+      debounce((values: FormValues) => {
+        if (updateCandidateFilter) {
+          updateCandidateFilter(formValuesToData(values));
+        }
+      }, 200),
     [formValuesToData, updateCandidateFilter],
   );
 
