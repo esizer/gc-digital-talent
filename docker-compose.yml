@@ -19,33 +19,31 @@ services:
     ports:
       - 8080:8080
 
-  # php:
-  #   build: ./php-container
-  #   working_dir: /var/www/html
-  #   restart: always
-  #   volumes:
-  #     - ./php-container/src:/var/www/html/
-  #     - ../auth:/var/www/html/auth
-  #     - ../frontend:/var/www/html/frontend
-  #     - ../tc-report:/var/www/html/tc-report
-  #   ports:
-  #     - 8000:80
-  #     - 8001:443
-  #   env_file:
-  #     - ../frontend/admin/.apache_env
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/usr/src/frontend
+      - shared:/usr/src/frontend/shared
+      - /usr/src/frontend/node_modules
+    env_file:
+      - ./frontend/admin/.apache_env
+    depends_on:
+      - api
+    #entrypoint: ["tail", "-f", "/dev/null"]
 
-  # maintenance:
-  #   build: ./maintenance-container
-  #   working_dir: /root/scripts
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 0
-  #   volumes:
-  #     - maintenancedata:/root
-  #     - ../maintenance/scripts:/root/scripts
-  #     - ../auth:/var/www/html/auth
-  #     - ../frontend:/var/www/html/frontend
-  #     - ../tc-report:/var/www/html/tc-report
+  reverseproxy:
+    build: ./infrastructure/reverseproxy
+    ports:
+      - 8000:80
+      - 8001:443
+    volumes:
+      - ./infrastructure/reverseproxy/src:/var/www/html/
+      - ./tc-report:/var/www/html/tc-report
+      - ./frontend/talentsearch:/var/www/html/frontend/talentsearch
+      - ./frontend/admin:/var/www/html/frontend/admin
+      - ./frontend/indigenousapprenticeship:/var/www/html/frontend/indigenousapprenticeship
+      - ./api:/var/www/html/api
+      - ./auth:/var/www/html/auth
 
   api:
     build: ./api
@@ -63,6 +61,7 @@ services:
       - /usr/src/api/storage/logs
     ports:
       - 8002:8002
+    #entrypoint: [ "php", "artisan", "serve", "--host=0.0.0.0", "--port=8002" ]
 
   auth:
     build: ./auth
@@ -81,5 +80,7 @@ services:
       - /usr/src/auth/storage/logs
     ports:
       - 8003:8003
+    #entrypoint: [ "php", "artisan", "serve", "--host=0.0.0.0", "--port=8003" ]
+
 volumes:
   shared:

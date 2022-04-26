@@ -17,5 +17,3 @@ COPY composer.json composer.lock ./
 
 # no scripts - files aren't mounted in yet to run
 RUN composer install --no-scripts
-
-ENTRYPOINT [ "php", "artisan", "serve", "--host=0.0.0.0", "--port=8002" ]

@@ -33,5 +33,3 @@ RUN composer install --no-scripts
 COPY package.json package-lock.json ./
 
 RUN npm install
-
-ENTRYPOINT [ "php", "artisan", "serve", "--host=0.0.0.0", "--port=8003" ]

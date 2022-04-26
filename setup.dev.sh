@@ -1,7 +1,4 @@
-#! /usr/bin/env bash
-
-# Use some common shell options for error handling and output.
-# See: https://tldp.org/LDP/abs/html/options.html
+#!/usr/bin/env bash
 
 # Script exits when command fails.
 set -o errexit
@@ -10,8 +7,11 @@ set -o errexit
 set -o pipefail
 
 # Print commands (and bash scripts/source files) while executing.
-# Scripts get very noisy. Uncomment for debugging.
-#set -o verbose
+set -o verbose
 
 # Fail if using undefined variables.
 set -o nounset
+
+docker-compose run --rm auth "./setup.dev.sh"
+docker-compose run --rm api "./setup.dev.sh"
+docker-compose run --rm frontend "./setup.dev.sh"
