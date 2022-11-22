@@ -15,7 +15,7 @@
     "e2e:run:inspect": "cypress run --browser=chrome --spec cypress/integration/**/*${E2E_FILTER:-language-selection}*.spec.js --no-exit --headed"
   },
   "devDependencies": {
-    "cypress": "^9.6.0",
+    "cypress": "^11.1.0",
     "cypress-multi-reporters": "^1.6.0",
     "cypress-terminal-report": "^3.5.2"
   }
