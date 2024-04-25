@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "react": "^18.2.0",
+    "react": "^18.3.0",
     "tsconfig": "*",
     "typescript": "^5.4.2"
   }
