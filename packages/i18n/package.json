@@ -28,7 +28,7 @@
     "@gc-digital-talent/graphql": "*"
   },
   "devDependencies": {
-    "@formatjs/cli": "^6.2.7",
+    "@formatjs/cli": "^6.2.12",
     "@swc/core": "^1.4.5",
     "@types/react": "^18.2.64",
     "cpy-cli": "^5.0.0",
