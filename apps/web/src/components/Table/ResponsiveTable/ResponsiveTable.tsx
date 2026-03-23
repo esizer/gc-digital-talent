@@ -6,6 +6,7 @@ import { Loading } from "@gc-digital-talent/ui";
 import ColumnDialog from "./ColumnDialog";
 import NullMessage, { NullMessageProps } from "./NullMessage";
 import RowSelection from "./RowSelection";
+import ResultsLiveRegion from "./ResultsLiveRegion";
 import SearchForm from "./SearchForm";
 import Table from "./Table";
 import TablePagination from "./TablePagination";
@@ -19,8 +20,9 @@ import type {
   SearchDef,
   SortDef,
 } from "./types";
-import useResponsiveTableController from "./useResponsiveTableController";
+import useClientResponsiveTableController from "./useClientResponsiveTableController";
 import { getTableStateFromSearchParams } from "./useControlledTableState";
+import useServerResponsiveTableController from "./useServerResponsiveTableController";
 
 interface TableProps<TData, TFilters> {
   caption: string;
@@ -53,9 +55,22 @@ const ResponsiveTable = <TData extends object, TFilters = object>(
     rowSelect,
     download,
     isLoading,
+    sort,
+    pagination,
     urlSync = true,
     filterParamKey = SEARCH_PARAM_KEY.FILTERS,
   } = props;
+
+  const isServerDriven =
+    search?.internal === false ||
+    sort?.internal === false ||
+    pagination?.internal === false;
+
+  const controllerProps = {
+    ...props,
+    urlSync,
+    filterParamKey,
+  };
 
   const {
     id,
@@ -70,11 +85,9 @@ const ResponsiveTable = <TData extends object, TFilters = object>(
     captionId,
     paginationAdjusted,
     rowSelectionCount,
-  } = useResponsiveTableController({
-    ...props,
-    urlSync,
-    filterParamKey,
-  });
+  } = isServerDriven
+    ? useServerResponsiveTableController(controllerProps)
+    : useClientResponsiveTableController(controllerProps);
 
   return (
     <>
@@ -157,6 +170,7 @@ const ResponsiveTable = <TData extends object, TFilters = object>(
           })}
         </span>
       ) : null}
+      <ResultsLiveRegion total={paginationAdjusted?.total} />
     </>
   );
 };

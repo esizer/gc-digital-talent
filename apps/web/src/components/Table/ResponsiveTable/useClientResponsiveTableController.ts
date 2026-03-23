@@ -6,12 +6,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useId, useMemo } from "react";
+import { useId, useMemo } from "react";
 import { useIntl } from "react-intl";
 
 import { notEmpty } from "@gc-digital-talent/helpers";
 
-import { INITIAL_STATE } from "./constants";
 import { getRowSelectionColumn, useRowSelection } from "./RowSelection";
 import type { NullMessageProps } from "./NullMessage";
 import type {
@@ -24,13 +23,10 @@ import type {
   SortDef,
 } from "./types";
 import useControlledTableState from "./useControlledTableState";
-import type { ControlledState } from "./useControlledTableState";
-import useTableResultsAnnouncement from "./useTableResultsAnnouncement";
 import useTableUrlSync from "./useTableUrlSync";
 import { getColumnHeader } from "./utils";
 
 interface ControllerProps<TData extends object, TFilters> {
-  caption: string;
   data: TData[];
   columns: ColumnDef<TData>[];
   hiddenColumnIds?: string[];
@@ -63,7 +59,7 @@ interface ControllerResult<TData extends object> {
   rowSelectionCount: number;
 }
 
-const useResponsiveTableController = <TData extends object, TFilters>({
+const useClientResponsiveTableController = <TData extends object, TFilters>({
   data,
   columns,
   hiddenColumnIds,
@@ -81,13 +77,13 @@ const useResponsiveTableController = <TData extends object, TFilters>({
   const id = useId();
   const intl = useIntl();
 
-  const memoizedColumns = useMemo(() => {
-    if (!rowSelect) {
-      return columns;
-    }
-
-    return [getRowSelectionColumn(rowSelect.cell, intl), ...columns];
-  }, [columns, intl, rowSelect]);
+  const memoizedColumns = useMemo(
+    () =>
+      rowSelect
+        ? [getRowSelectionColumn(rowSelect.cell, intl), ...columns]
+        : columns,
+    [columns, intl, rowSelect],
+  );
 
   const { syncStateToUrl } = useTableUrlSync({
     enabled: urlSync,
@@ -111,16 +107,13 @@ const useResponsiveTableController = <TData extends object, TFilters>({
         sortState: sort?.initialState,
         paginationState: pagination?.initialState,
       },
-      onStateChange: (nextState) => syncStateToUrl(nextState),
+      onStateChange: ({ nextState, key }) => {
+        syncStateToUrl(nextState);
+        if (key === "sorting") {
+          sort?.onSortChange?.(nextState.sorting);
+        }
+      },
     });
-
-  const manualPageSize = !pagination?.internal
-    ? Math.ceil(
-        (pagination?.total ?? 0) /
-          (state.pagination?.pageSize ??
-            INITIAL_STATE.paginationState.pageSize),
-      )
-    : undefined;
 
   const table = useReactTable({
     data,
@@ -132,12 +125,11 @@ const useResponsiveTableController = <TData extends object, TFilters>({
     },
     getRowId: rowSelect?.getRowId,
     autoResetPageIndex: false,
-    manualFiltering: !search?.internal,
+    manualFiltering: false,
     enableRowSelection: !!rowSelect,
     enableSorting: !!sort,
-    manualSorting: !sort?.internal,
-    manualPagination: !pagination?.internal,
-    pageCount: manualPageSize,
+    manualSorting: false,
+    manualPagination: false,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -147,37 +139,12 @@ const useResponsiveTableController = <TData extends object, TFilters>({
   });
 
   const tableState = table.getState();
-
-  useEffect(() => {
-    syncStateToUrl(state as ControlledState);
-  }, [filter?.state, state, syncStateToUrl]);
-
-  useEffect(() => {
-    if (pagination?.internal) {
-      table.resetPageIndex(true);
-    }
-  }, [filter?.state, pagination?.internal, table]);
-
-  useEffect(() => {
-    sort?.onSortChange?.(tableState.sorting);
-  }, [sort, tableState.sorting]);
-
-  const hasNoData = !isLoading && data.length === 0;
-  const hasNoVisibleRows = !isLoading && table.getRowModel().rows.length === 0;
-
-  const nullStateMessage =
-    tableState.columnFilters.length > 0 || tableState.globalFilter !== ""
-      ? nullSearchMessage
-      : nullMessage;
-
-  const paginationAdjusted = pagination?.internal
+  const paginationAdjusted = pagination
     ? {
         ...pagination,
         total: table.getFilteredRowModel().rows.length,
       }
-    : pagination;
-
-  useTableResultsAnnouncement({ totalRows: paginationAdjusted?.total });
+    : undefined;
 
   return {
     id,
@@ -193,9 +160,12 @@ const useResponsiveTableController = <TData extends object, TFilters>({
     hidableColumnsCount: table
       .getAllLeafColumns()
       .filter((column) => column.getCanHide()).length,
-    hasNoData,
-    hasNoVisibleRows,
-    nullStateMessage,
+    hasNoData: !isLoading && data.length === 0,
+    hasNoVisibleRows: !isLoading && table.getRowModel().rows.length === 0,
+    nullStateMessage:
+      tableState.columnFilters.length > 0 || tableState.globalFilter !== ""
+        ? nullSearchMessage
+        : nullMessage,
     canSort: table
       .getFlatHeaders()
       .some((header) => header.column.getCanSort()),
@@ -205,4 +175,4 @@ const useResponsiveTableController = <TData extends object, TFilters>({
   };
 };
 
-export default useResponsiveTableController;
+export default useClientResponsiveTableController;

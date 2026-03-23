@@ -26,7 +26,11 @@ interface ControlledState {
   sorting: SortingState;
 }
 
-type ControlledStateChangeCallback = (state: ControlledState) => void;
+type ControlledStateChangeCallback = (args: {
+  nextState: ControlledState;
+  previousState: ControlledState;
+  key: keyof ControlledState;
+}) => void;
 
 export const getTableStateFromSearchParams = (
   initialState?: Partial<InitialState>,
@@ -153,7 +157,7 @@ const useControlledTableState = ({
         ...previous,
         [key]: resolveUpdater(previous[key], updater),
       };
-      onStateChange?.(next);
+      onStateChange?.({ nextState: next, previousState: previous, key });
       return next;
     });
   };
