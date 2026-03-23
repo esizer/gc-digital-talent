@@ -1,7 +1,7 @@
-import { useState, SetStateAction, Dispatch, useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
-  OnChangeFn,
   ColumnFiltersState,
+  OnChangeFn,
   PaginationState,
   SortingState,
   TableState,
@@ -9,29 +9,24 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import { InitialState } from "./types";
 import { INITIAL_STATE, SEARCH_PARAM_KEY } from "./constants";
-import { getColumnVisibility, getColumnFilters } from "./utils";
+import { InitialState } from "./types";
+import { getColumnFilters, getColumnVisibility } from "./utils";
 
-type UpdateStateCallback<State> = (newState: State | null) => void;
+const resolveUpdater = <T,>(previous: T, updater: Updater<T>): T =>
+  typeof updater === "function"
+    ? (updater as (old: T) => T)(previous)
+    : updater;
 
-const updateState = <State>(
-  setter: Dispatch<SetStateAction<State>>,
-  updater: Updater<State>,
-  callback?: UpdateStateCallback<State>,
-) => {
-  let newValue: State | null = null;
-  if (updater instanceof Function) {
-    setter((previous) => {
-      newValue = updater(previous);
-      if (callback) callback(newValue);
-      return newValue;
-    });
-  } else {
-    setter(updater);
-    if (callback) callback(updater);
-  }
-};
+interface ControlledState {
+  columnFilters: ColumnFiltersState;
+  columnVisibility: VisibilityState;
+  globalFilter: string;
+  pagination: PaginationState;
+  sorting: SortingState;
+}
+
+type ControlledStateChangeCallback = (state: ControlledState) => void;
 
 export const getTableStateFromSearchParams = (
   initialState?: Partial<InitialState>,
@@ -43,7 +38,7 @@ export const getTableStateFromSearchParams = (
   if (columnVisibilityParam) {
     state = {
       ...state,
-      hiddenColumnIds: columnVisibilityParam?.split(","),
+      hiddenColumnIds: columnVisibilityParam.split(","),
     };
   }
 
@@ -114,66 +109,54 @@ interface UseControlledTableStateReturn {
 interface UseControlledTableStateArgs {
   initialState: Partial<InitialState>;
   columnIds: string[];
+  onStateChange?: ControlledStateChangeCallback;
 }
 
-type UseControlledTableState = (
-  args: UseControlledTableStateArgs,
-) => UseControlledTableStateReturn;
-
-/**
- * Controlled Table State
- *
- * This controls the state for the table using the `updateState`
- * wrapper which allows for a callback to run side effects.
- *
- * @param initialState  Initial state of the table
- * @returns UseControlledTableStateReturn Contains the state and updaters
- */
-const useControlledTableState: UseControlledTableState = ({
-  initialState,
-  columnIds,
-}) => {
-  const initialStateFromParams = getTableStateFromSearchParams(initialState);
-
-  const [globalFilter, setGlobalFilter] = useState<string>(
-    initialStateFromParams.searchState?.term ?? "",
-  );
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    getColumnFilters(initialStateFromParams.searchState) ?? [],
-  );
-
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    getColumnVisibility(columnIds, initialStateFromParams.hiddenColumnIds),
-  );
-
-  const [sorting, setSorting] = useState<SortingState>(
-    initialStateFromParams.sortState ?? INITIAL_STATE.sortState,
-  );
-
-  const [pagination, setPagination] = useState<PaginationState>({
+const buildControlledState = (
+  stateFromParams: Partial<InitialState>,
+  columnIds: string[],
+): ControlledState => ({
+  columnFilters: getColumnFilters(stateFromParams.searchState) ?? [],
+  columnVisibility: getColumnVisibility(
+    columnIds,
+    stateFromParams.hiddenColumnIds,
+  ),
+  globalFilter: stateFromParams.searchState?.term ?? "",
+  pagination: {
     pageIndex:
-      initialStateFromParams.paginationState?.pageIndex ??
+      stateFromParams.paginationState?.pageIndex ??
       INITIAL_STATE.paginationState.pageIndex,
     pageSize:
-      initialStateFromParams.paginationState?.pageSize ??
+      stateFromParams.paginationState?.pageSize ??
       INITIAL_STATE.paginationState.pageSize,
-  });
+  },
+  sorting: stateFromParams.sortState ?? INITIAL_STATE.sortState,
+});
 
-  const handleGlobalFilterChange = (updater: Updater<string>) =>
-    updateState(setGlobalFilter, updater);
+const useControlledTableState = ({
+  initialState,
+  columnIds,
+  onStateChange,
+}: UseControlledTableStateArgs): UseControlledTableStateReturn => {
+  const initialStateFromParams = getTableStateFromSearchParams(initialState);
 
-  const handleColumnFiltersChange = (updater: Updater<ColumnFiltersState>) =>
-    updateState(setColumnFilters, updater);
+  const [tableState, setTableState] = useState<ControlledState>(() =>
+    buildControlledState(initialStateFromParams, columnIds),
+  );
 
-  const handleVisibilityChange = (updater: Updater<VisibilityState>) =>
-    updateState(setColumnVisibility, updater);
-
-  const handleSortingChange = (updater: Updater<SortingState>) =>
-    updateState(setSorting, updater);
-
-  const handlePaginationChange = (updater: Updater<PaginationState>) =>
-    updateState(setPagination, updater);
+  const updateControlledState = <K extends keyof ControlledState>(
+    key: K,
+    updater: Updater<ControlledState[K]>,
+  ) => {
+    setTableState((previous) => {
+      const next = {
+        ...previous,
+        [key]: resolveUpdater(previous[key], updater),
+      };
+      onStateChange?.(next);
+      return next;
+    });
+  };
 
   const memoizedInitialState: Partial<TableState> = useMemo(
     () => ({
@@ -195,29 +178,23 @@ const useControlledTableState: UseControlledTableState = ({
     ],
   );
 
-  const memoizedState: Partial<TableState> = useMemo(
-    () => ({
-      columnFilters,
-      columnVisibility,
-      globalFilter,
-      pagination,
-      sorting,
-    }),
-    [columnFilters, columnVisibility, globalFilter, pagination, sorting],
-  );
-
   return {
     initialParamState: initialStateFromParams,
     initialState: memoizedInitialState,
-    state: memoizedState,
+    state: tableState,
     updaters: {
-      onColumnFiltersChange: handleColumnFiltersChange,
-      onColumnVisibilityChange: handleVisibilityChange,
-      onPaginationChange: handlePaginationChange,
-      onGlobalFilterChange: handleGlobalFilterChange,
-      onSortingChange: handleSortingChange,
+      onColumnFiltersChange: (updater) =>
+        updateControlledState("columnFilters", updater),
+      onColumnVisibilityChange: (updater) =>
+        updateControlledState("columnVisibility", updater),
+      onGlobalFilterChange: (updater) =>
+        updateControlledState("globalFilter", updater),
+      onPaginationChange: (updater) =>
+        updateControlledState("pagination", updater),
+      onSortingChange: (updater) => updateControlledState("sorting", updater),
     },
   };
 };
 
 export default useControlledTableState;
+export type { ControlledState, ControlledStateChangeCallback };
